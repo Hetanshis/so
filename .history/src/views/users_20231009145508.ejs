@@ -1,0 +1,182 @@
+<!-- <html>  
+  
+<head>  
+    <title>Using Jquery Datatable</title>  
+  
+    <head>  
+       
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css" />  
+        
+      
+    </head>  
+  
+    <body>    
+        <table id="datatable">  
+            <button type="button" onclick="tableToCSV()">
+               Export
+            </button>
+            <thead>  
+                <tr>  
+                    <th> Id </th>  
+                    <th> Name </th>  
+                    <th> Email </th>  
+                    <th> contactNumber</th>  
+                </tr>  
+            </thead>  
+            <tbody>
+                <% if(data.length > 0){ %>
+         
+                   <% for ( var i = 0 ; i < data.length ; i++){ %>
+                   <tr>
+                      <td>
+                          <%= data[i].id%>
+                       </td>
+                      <td>
+                         <%= data[i].name%>
+                      </td>
+                      <td>
+                         <%= data[i].email%>
+                      </td>
+                      <td>
+                          <%= data[i].contactNumber%>
+                       </td>
+                   </tr>
+                   <% } %>
+         
+                <% } %>
+              </tbody>  
+        </table>  
+
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>  
+        <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js" type="text/javascript"></script>  
+        <script type="text/javascript">  
+            $(document).ready(function ()  
+            {  
+                $('#datatable').dataTable(  
+                {
+                    select: true,
+                    dom: 'Bfrtip',
+                    buttons: [
+                    {
+                        extend: 'excel',
+                        text: 'Export excel',
+                        className: 'exportExcel',
+                        filename: 'Export excel',
+                        exportOptions: {
+                            modifier: {
+                            page: 'all'
+                            }
+                        }
+                    }
+                    ]
+                });  
+            });  
+                    </script> 
+    </body>  
+  
+</html>   -->
+
+<!DOCTYPE html>
+<html>
+ 
+<body>
+    <center>
+      
+        <h2>Table to CSV converter</h2>
+        <table border="1" cellspacing="0" cellpadding="10">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>contactNumber</th>
+            </tr>
+            <% if(data.length > 0){ %>
+         
+                <% for ( var i = 0 ; i < data.length ; i++){ %>
+                <tr>
+                   <td>
+                       <%= data[i].id%>
+                    </td>
+                   <td>
+                      <%= data[i].name%>
+                   </td>
+                   <td>
+                      <%= data[i].email%>
+                   </td>
+                   <td>
+                       <%= data[i].contactNumber%>
+                    </td>
+                </tr>
+                <% } %>
+      
+             <% } %>
+        </table>
+        <br><br>
+        <button type="button" onclick="tableToCSV()">
+            download CSV
+        </button>
+    </center>
+ 
+    <script type="text/javascript">
+    async function tableToCSV(data) {
+
+  // Variable to store the final csv data
+  let csv_data = [];
+
+  // Check if the input array is empty
+  if (data.length === 0) {
+    return csv_data;
+  }
+
+  // Get the column names
+  const column_names = Object.keys(data[0]);
+
+  // Add the column names to the CSV data
+  csv_data.push(column_names.join(","));
+
+  // Iterate over the data and add each row to the CSV data
+  for (let i = 0; i < data.length; i++) {
+
+    let row = [];
+    for (let j = 0; j < column_names.length; j++) {
+      row.push(data[i][column_names[j]]);
+    }
+
+    csv_data.push(row.join(","));
+  }
+
+  // Combine each row data with new line character
+  csv_data = csv_data.join('\n');
+
+  return csv_data;
+}
+        function downloadCSVFile(csv_data) {
+ 
+            // Create CSV file object and feed
+            // our csv_data into it
+            CSVFile = new Blob([csv_data], {
+                type: "text/csv"
+            });
+ 
+            // Create to temporary link to initiate
+            // download process
+            var temp_link = document.createElement('a');
+ 
+            // Download csv file
+            temp_link.download = "GfG.csv";
+            var url = window.URL.createObjectURL(CSVFile);
+            temp_link.href = url;
+ 
+            // This link should not be displayed
+            temp_link.style.display = "none";
+            document.body.appendChild(temp_link);
+ 
+            // Automatically click the link to
+            // trigger download
+            temp_link.click();
+            document.body.removeChild(temp_link);
+        }
+    </script>
+</body>
+ 
+</html>

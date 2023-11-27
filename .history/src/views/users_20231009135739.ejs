@@ -1,0 +1,112 @@
+<html>  
+  
+<head>  
+    <title>Using Jquery Datatable</title>  
+  
+    <head>  
+       
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css" />  
+        
+      
+    </head>  
+  
+    <body>    
+        <table id="datatable">  
+            <button type="button" onclick="tableToCSV()">
+                download CSV
+            </button>
+            <thead>  
+                <tr>  
+                    <th> Id </th>  
+                    <th> Name </th>  
+                    <th> Email </th>  
+                    <th> contactNumber</th>  
+                </tr>  
+            </thead>  
+            <tbody>
+                <% if(data.length > 0){ %>
+         
+                   <% for ( var i = 0 ; i < data.length ; i++){ %>
+                   <tr>
+                      <td>
+                          <%= data[i].id%>
+                       </td>
+                      <td>
+                         <%= data[i].name%>
+                      </td>
+                      <td>
+                         <%= data[i].email%>
+                      </td>
+                      <td>
+                          <%= data[i].contactNumber%>
+                       </td>
+                   </tr>
+                   <% } %>
+         
+                <% } %>
+              </tbody>  
+        </table>  
+
+        <script src="https://code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>  
+        <script src="https://cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js" type="text/javascript"></script>  
+        <script type="text/javascript">  
+            $(document).ready(function ()  
+            {  
+                $('#datatable').dataTable(  
+                {
+                    select: true,
+                    dom: 'Bfrtip',
+                    buttons: [
+                    {
+                        extend: 'excel',
+                        text: 'Export excel',
+                        className: 'exportExcel',
+                        filename: 'Export excel',
+                        exportOptions: {
+                            modifier: {
+                            page: 'all'
+                            }
+                        }
+                    }
+                    ]
+                });  
+            });  
+
+         const response = await fetch(`/user/lists}`, {
+		method: "GET",
+		headers: {"Content-Type": "application/json"},
+	});
+
+	if (!response.ok) {
+	// Handle any error responses from the backend
+	console.error("Export request failed:", response.statusText);
+	return;
+	}
+
+	// Parse the response data
+	const responseBody = await response.json();
+	console.log("Received response body:", responseBody);
+
+	// Check if the actual data is an array
+	if (!Array.isArray(responseBody.exportedData.productsdata)) {
+	console.error("Received data is not an array:", responseBody.exportedData.productsdata);
+	return;
+	}
+	let csvContent = "Product SKU,Product Name,Brand Name,Description,Category,Sub Category,Size,Color,Fabric,Price,Discount Price,Cloth Condition, Previous Altered,Tags,Product Image\n"; // Headers
+
+	responseBody.exportedData.productsdata.forEach((item) => {
+		//csvContent += `${item.ID},"${item["Product Name"]}","${item["Seller Name"]}",${item.brand_name},${item.Price},"${item["Seller Price"]}",${item.Discount},"${item["Discount Price"]}",${item.cloth_condition},${item.previous_altered},${item.admin_commission},"${item["Product Image"]}","${item["Sub Category"]}","${item["Category Name"]}","${item.color_name}","${item.size_name}","${item.fabric_name}"\n`; // Data rows
+		csvContent += `${item["Product SKU"]},"${item["Product Name"]}",${item["Brand Name"]},${item["Product Description"]},"${item["Product Category"]}","${item["Product SubCategory"]}","${item["Product Size"]}","${item["Product Color"]}","${item["Product Fabric"]}",${item.Price},"${item["Discount Price"]}","${item["Cloth Condition"]}","${item["Previous Altered"]}","${item["Product Tags"]}","${item["Product Image"]}"\n`; // Data rows
+	});
+	// Create a Blob with the CSV content
+	const blob = new Blob([csvContent], { type: "text/csv" });
+
+	const downloadLink = document.createElement('a');
+	downloadLink.href = (responseBody.sample_csv_url && responseBody.sample_csv_url != '') ? responseBody.sample_csv_url : '';
+	downloadLink.download ='Products.xlsx';
+	downloadLink.click();
+
+                    </script> 
+    </body>  
+  
+</html>  
